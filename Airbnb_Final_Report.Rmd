@@ -12,7 +12,7 @@ output:
     toc_depth: 2
     number_sections: true
 
-abstract: "Since 2008 Airbnb has been a disruptive force in the short-term rental market. Currently operating in 191 countries and with over three million concurrent listings, the platform allows renters to book accommodations remotely from anywhere on Earth. With this increased exposure comes both increased risks and rewards. For a host to become successful they must maintain a high user rating which is based on their guests\' experiences. In this paper I attempt to establish a model to estimate the listing attributes which contribute to guests leaving higher reviews. The data is obtained directly from Airbnb.com using Python 3, containing 12,715 listings from Toronto, Canada. From the data a ggmap is created using the locational information provide from the listings. Variable selection is performed using cross validation. The review scores are converted to the following categories, 1-3.5 stars (\"Unsatisfied\") and 4-5 stars (\"Satisfied\"). The most appropriate logistic regression fit, included the following predictors: total number of host listings, price and number of reviews. This allows us to deduce that price and longevity are important in determining if an Airbnb host is successful. Hence hosts should aim to provide the listings at a reasonable price. Moreover, the significant covariates related to longevity are less likely casual and more likely a property of successful listings. These results suggest that Airbnb host ratings are more likely affected by qualitative aspects of user experience than quantitative. Renters using Airbnb should attempt to find low cost, established renters to maximize their experiences." 
+abstract: "Since 2008 Airbnb has been a disruptive force in the short-term rental market. Currently operating in 191 countries and with over three million concurrent listings, the platform allows renters to book accommodations remotely from anywhere on Earth. With this increased exposure comes both increased risks and rewards. For a host to become successful they must maintain a high user rating which is based on their guests\' experiences. In this paper I attempt to establish a model to estimate the listing attributes which contribute to guests leaving higher reviews. The data is obtained directly from Airbnb.com using Python 3, containing 12,715 listings from Toronto, Canada. From the data a ggmap is created using the locational information provided from the listings. Variable selection is performed using cross validation. The review scores are converted to the following categories, 1-3.5 stars (\"Unsatisfied\") and 4-5 stars (\"Satisfied\"). The most appropriate logistic regression fit, included the following predictors: total number of host listings, price and number of reviews. This allows us to deduce that price and longevity are important in determining if an Airbnb host is successful. Hence hosts should aim to provide the listings at a reasonable price. Moreover, the significant covariates related to longevity are less likely casual and more likely a property of successful listings. These results suggest that Airbnb host ratings are more likely affected by qualitative aspects of user experience than quantitative. Renters using Airbnb should attempt to find low cost, established renters to maximize their experiences." 
 
 fontsize: 12pt
 ---
@@ -57,7 +57,7 @@ registerDoParallel(cores = 6)
 # Scraped Data
 #http://tomslee.net/airbnb-data-collection-get-the-data
 # Read the data file using choose file
-air.omit <- read.csv(file = "listings-rich.csv",
+air.omit <- read.csv(file = "./listings.csv",
                       sep=",",
                       stringsAsFactors = F,
                       header = T)
@@ -447,7 +447,7 @@ pscl::pR2(binary.model.2)
 
 # Introduction
 
-With approximately 48% of the World's population (3.648 Billion people) with access to the internet worldwide as of 2017 (Development, 2017), virtual commerce is at an unprecedented level. Airbnb.com is an online marketplace which allows hosts to rent their properties on a short-term basis. The hosts may rent entire homes, private room, or shared rooms, with experiences being recently added to the Airbnb site. The site excels in the short-term rental space, primarily by offering lower nightly rates than traditional establishments, more accessible bookings and unique experiences from a lower renter to host ratio. Airbnb offers rentals from as low as $10 USD per night, in over 191 countries (https://www.airbnb.ca/about/about-us, 2017). In most markets this is far below the average rate. Due the unique market advantage of Airbnb many consider it a disruptive institution (Guttentag, 2015). With this disruption comes an increased level of criticism from communities and the government (Horton, 2015). The lower level of verification for renters, often leads to conflict between hosts and their surrounding neighbors. In some cases, this has lead to the termination of rentals, fines and extensive damage to the rental property. The increased oversight from the government has lead to pressure for stronger regulations on short-term rentals. For current and perspective hosts, the issue of remaining profitable is essential. Thus hosts should attempt to maximize their rating on the site to ensure continuing business.  In this paper I attempt to establish a model to estimate the listing attributes which contribute to guests leaving higher reviews, and thus producing more profitable outcomes for hosts.
+With approximately 48% of the World's population (3.648 Billion people) with access to the internet worldwide as of 2017 (Development, 2017), virtual commerce is at an unprecedented level. Airbnb.com is an online marketplace which allows hosts to rent their properties on a short-term basis. The hosts may rent entire homes, private room, or shared rooms, with experiences being recently added to the Airbnb site. The site excels in the short-term rental space, primarily by offering lower nightly rates than traditional establishments, more accessible bookings and unique experiences from a lower renter to host ratio. Airbnb offers rentals from as low as $10 USD per night, in over 191 countries (https://www.airbnb.ca/about/about-us, 2017). In most markets this is far below the average rate. Due to the unique market advantage of Airbnb, many consider it a disruptive institution (Guttentag, 2015). With this disruption comes an increased level of criticism from communities and the government (Horton, 2015). The lower level of verification for renters, often leads to conflict between hosts and their surrounding neighbors. In some cases, this has lead to the termination of rentals, fines and extensive damage to the rental property. The increased oversight from the government has lead to pressure for stronger regulations on short-term rentals. For current and perspective hosts, the issue of remaining profitable is essential. Thus hosts should attempt to maximize their rating on the site to ensure continuing business.  In this paper I attempt to establish a model to estimate the listing attributes which contribute to guests leaving higher reviews, and thus producing more profitable outcomes for hosts.
 
 
 # Methods
@@ -466,7 +466,7 @@ missmap(air.omit, main = "Missing values vs observed",
         x.cex = 0.35)
 ```
 
-Using the Amelia II package we can see some degree of the missingness of our data. In this figure the x-axis is the variables ordered left to right from most missing to least missing. The y axis expresses the observation number. From the above figure we can see that host response rating is heavily missing and should most likely be removed. 
+Using the Amelia II package we can see some degree of the missingness of our data. In this figure the x-axis is the variables ordered left to right from most missing to least missing. The y axis expresses the observation number. From the above figure we can see that host response rating, host_response_rate is heavily missing and should most likely be removed. 
 
 ### GGplot Mapping
 ```{r}
@@ -496,10 +496,10 @@ Using the ggmap package, the following plot is created by accessing a current Go
 
 ## Data Cleaning
 
-The number of bathrooms is rounded using the ceiling function in R to reduce the number of factors needed in later modeling. Price is treated as continuous, although it is discrete as the range of prices was \$4486 CAD. Pricing was limited to \$13 to \$1600 to eliminate cases where the pricing reflected on the site was incorrectly entered by the host as monthly. The value of \$1600 was chosen as at the time of writing the most expensive nightly rate in Toronto was under \$1600. The function OutlierKD was run on some variables but seems to remove too many valid observations. The remaining variables have some observations removed for missingness, leaving 9741. Since the Python 3 scraping script has a consistent format, several scrapes can be merged to increase sample size. As there is no guarantee this has not occurred, the data are removed if their unique room ID number is repeated. To prepare the data for modeling, ID, host ID, host response rate, host listing count, latitude, longitude and calculated host listing counts are removed. 
+The number of bathrooms is rounded using the ceiling function ($\lceil x \rceil = min\{n\in \mathbb{Z}| n \geq x \}$) in R to reduce the number of factors needed in later modeling. Price is treated as continuous, although it is discrete as the range of prices was \$4486 CAD. Pricing was limited to \$13 to \$1600 to eliminate cases where the pricing reflected on the site was incorrectly entered by the host as monthly. The value of \$1600 was chosen as at the time of writing the most expensive nightly rate in Toronto was under \$1600. The function OutlierKD to automatically filter outlying data points on some variables but OutlierKD seems to remove too many valid observations. The remaining variables have some observations removed for missingness, leaving 9741 of the initial 12,715 observations. Since the Python 3 scraping script has a consistent format, several scrapes can be merged to increase sample size. As there is no guarantee this has not occurred, the data are removed if their unique room ID number is repeated. To prepare the data for modeling, ID, host ID, host response rate, host listing count, latitude, longitude and calculated host listing counts are removed. 
 
 ## Modeling
-The response of review score for the logistic model is ordinal fitting a cumulative logistic. First by categorizing the review scores, and then by running the saturated cumulative logistic model. 
+The response of review score for the logistic model is ordinal fitting a cumulative logistic. First by categorizing the review scores initially into 5 categories, and then by running the saturated cumulative logistic model. 
 
 ```{r, eval=FALSE}
 # So we have a left skewed distribution for stars.
@@ -568,7 +568,7 @@ summary(fit.1)
 car::vif(fit.1)
 #a gvif^(1/(2*df)) is near 2 so we may want to remove variables.
 ```
-Initially exhaustive subset selection is run on a linear model. Although the number of variables is computable, the exhaustive selection fails to complete most likely due to the prefect separation. An other method to remove perfect separation is to remove multicollinear variables (UCLA, 2016). Running VIF on the saturated model, shows few variables with GVIF > 2 and removing them does not rectify the perfect separation. Since perfect separation is caused by non-convergence of maximum likelihood, another approach is to use cross-validation to remove variables based on Mean Squared Error. 
+Initially exhaustive subset selection is run on a simple linear model using the original review scores as response. Although the number of variables is computable, the exhaustive selection fails to complete most likely due to the prefect separation. Another method to remove perfect separation is to remove multicollinear variables (UCLA, 2016). Running the VIF function from the car package in R on the saturated model, shows few variables with GVIF > 2, the usual multicollinearity cut-off. Even conservatively removing these variables does not rectify the issue of perfect separation. Since perfect separation is caused by non-convergence of maximum likelihood, another approach is to use cross-validation to remove variables based on Mean Squared Error. 
 
 ## Cross-Validation
 ```{r, eval = FALSE}
@@ -620,7 +620,7 @@ $$logit\Big(\frac{\hat{\pi}}{1-\hat{\pi}}\Big) = 2.3931 - 0.0070*total.listings 
 exp(coefficients(binary.model))
 exp(coefficients(binary.model.2))
 ```
-From the exponentiation of betas the impact on log odds of satisfaction in reviews seems small in both cases, as they are close to 1 for all covariates. For this reason a likelihood ratio test is run to see if reducing the model is adequate. From the large sample size using a significance level of $\alpha$ = 0.05 is adequate. 
+From the exponentiation of betas the impact on log odds of satisfaction in reviews for a 1 unit change in the covariate seems small in both cases, as they are close to 1 for all covariates. For this reason a likelihood ratio test is run to see if reducing the model is adequate. From the large sample size using a significance level of $\alpha$ = 0.05 is adequate. 
 
 $$\begin{aligned}
 H_{0}:logit\Big(\frac{\hat{\pi}}{1-\hat{\pi}}\Big) = \beta_{0} + 
@@ -636,20 +636,20 @@ $$H_{1}: logit\Big(\frac{\hat{\pi}}{1-\hat{\pi}}\Big) = \beta_{0} + \beta_{1}tot
 lrtest(binary.model, binary.model.2)
 ```
 
-Since p-value = .01352 < $\alpha = 0.05$ reject $H_{0}$ and the data do suggest the reduced model is adequate. Since the most adequate model has been found, a goodness of fit likelhood ratio is run. 
+Since p-value = .01352 < $\alpha = 0.05$ reject $H_{0}$ and the data do not suggest the reduced model is adequate. Since the most adequate model has been found, a goodness of fit likelhood ratio is run. 
 
 ```{r}
 lrtest(binary.model.2)
 ```
 
-$H_{0}:$ The model is not an adequate fit.
+$H_{0}:$ The model is an adequate fit.
 
-$H_{1}:$ The model is an adequate fit. 
+$H_{1}:$ The model is not an adequate fit. 
 
 $\alpha = 0.05$
 
 
-$H_{0}$ is rejected at the $\alpha = 0.05$ significance level, and the model is found to have an adequate fit. To get a rough idea of the predictive power of the model McFadden's pseudo-$R^2$ is calculated.
+$H_{0}$ is rejected at the $\alpha = 0.05$ significance level, and the model is found to have an inadequate fit. To get a rough idea of the predictive power of the model McFadden's pseudo-$R^2$ is calculated.
 
 ```{r}
 pR2(binary.model.2)
@@ -669,7 +669,7 @@ The data do suggest that a host's total number of listings decreases the estimat
 ## Model Significance
 
 Using the logistic model: $$logit\Big(\frac{\hat{\pi}}{1-\hat{\pi}}\Big) = 2.3931 - 0.0070*total.listings +
-0.0045*price + 0.0487*number.of.reviews$$ I find that the price a renter pays and number of reviews a host currently has do increase the likelyhood that a renter reviews their stay as satisfactory. This is agrees logicallly, as the more a renter pays, the more likely their accomodation will be habitable and comfortable. Similarily the more reviews a host has is indicative of their longevity on the site which usually correlates to hosts whom take their duties as short-term leasers more seriously. The model suggests that the total number of listings a hosts has correlates to a lower likelihood of a renter being satisfied with their accomodation. This result is slightly harder to explain, but I accredit this to hosts with several listings being less attentive to their individual guests' needs. 
+0.0045*price + 0.0487*number.of.reviews$$ I find that the price a renter pays and number of reviews a host currently has do increase the likelyhood that a renter reviews their stay as satisfactory. This makes intuitive sense, as the more a renter pays, the more likely we would expect their accomodation will be habitable and comfortable. Similarily the more reviews a host has is indicative of their longevity on the site which usually correlates to hosts whom take their duties as short-term leasers more seriously. The model suggests that the total number of listings a hosts has correlates to a lower likelihood of a renter being satisfied with their accomodation. This result is slightly harder to explain, but I accredit this to hosts with several listings being less attentive to their individual guests' needs. 
 The overall pseudo-predictive power of the model is low, which seems to be related to two factors. Firstly the data collected is limited to Airbnb's front-facing site. Most data driven companies, such as Airbnb retain their predictive data to cement their market position. Secondly the data are from an online voluntary survey which falls victim to survey methodology flaws.
 
 ## Survey Methodology
@@ -678,7 +678,7 @@ The topic of surveys and specifically online surveys is complex, for this report
 
 ### Content Control Bias
 
-Since Airbnb is a private company, with no legal requirement to disclose their review data, they have control over what content is publically available. Looking at their content policy (https://www.airbnb.ca/help/article/546/what-is-airbnb-s-content-policy) we can see several possibilities for Airbnb to positively skew responses. When a host leaves a review, Airbnb has final say over whether they wish to post the review. In cases where the renter is dissatisfied with their stay, Airbnb is financially incentivized to supress negative responses to retain public perception of positive experiences with Airbnb. I suggest a few sample cases where Airbnb may censor negative responses. If a reviewer suggests staying at a hotel instead of Airbnb, the review can be deleted for advertising another commercial company. Frustrated renters may also be more likely to use vulgar language to express their frustrations, which again is grounds for removal. Reviewers are also restricted from referring to details of Airbnb investigations. In this case even if a dispute is solved unfavorably for the renter, they cannot post a negative review of their stay.
+Since Airbnb is a private company, with no legal requirement to disclose their review data, they have control over what content is publically available. Looking at their content policy (https://www.airbnb.ca/help/article/546/what-is-airbnb-s-content-policy) we can see several possibilities for Airbnb to positively skew responses. When a renter leaves a review, Airbnb has final say over whether they wish to post the review. In cases where the renter is dissatisfied with their stay, Airbnb is financially incentivized to supress negative responses to retain public perception of positive experiences with Airbnb. I suggest a few sample cases where Airbnb may censor negative responses. If a reviewer suggests staying at a hotel instead of Airbnb, the review can be deleted for advertising another commercial company. Frustrated renters may also be more likely to use vulgar language to express their frustrations, which again is grounds for removal. Reviewers are also restricted from referring to details of Airbnb investigations. In this case even if a dispute is solved unfavorably for the renter, they cannot post a negative review of their stay.
 
 
 ### Extreme Response Bias
@@ -765,7 +765,7 @@ registerDoParallel(cores = 6)
 # Scraped Data
 #http://tomslee.net/airbnb-data-collection-get-the-data
 # Read the data file using choose file
-air.omit <- read.csv(file = "listings-rich.csv",
+air.omit <- read.csv(file = "./listings.csv",
                       sep=",",
                       stringsAsFactors = F,
                       header = T)
